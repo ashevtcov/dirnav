@@ -6,6 +6,7 @@ import {
   DEFAULT_SELECTED_CLASS,
   DEFAULT_FOCUSABLE_CLASS,
   DEFAULT_DEFAULT_SELECTION_CLASS,
+  DEFAULT_PREVENT_DEFAULT_EVENTS,
   KEY_ENTER,
   KEY_DOWN,
   KEY_UP,
@@ -76,6 +77,7 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   // Flow cannot parse them, so here's some shit code
   let focusableClass = (options && options.focusableClass) || DEFAULT_FOCUSABLE_CLASS;
   let selectedClass = (options && options.selectedClass) || DEFAULT_SELECTED_CLASS;
+  let preventDefaultEvents = (options && options.preventDefaultEvents) || DEFAULT_PREVENT_DEFAULT_EVENTS;
   // End of shit code
   const selected = document.querySelector(`.${selectedClass}`);
   const items = document.getElementsByClassName(focusableClass);
@@ -83,6 +85,10 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
 
   if (selected) {
     if (keyCode === KEY_ENTER) {
+      if (preventDefaultEvents) {
+        e.preventDefault();
+      }
+
       selected.classList.add('clicked');
       selected.click();
     }
@@ -99,6 +105,10 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   const pageHeight = getPageHeight();
 
   if (keyCode === KEY_DOWN) {
+    if (preventDefaultEvents) {
+      e.preventDefault();
+    }
+
     const { left, right, bottom } = rect(selected);
     const sortedItems = arr(items)
       .filter(item => rect(item).top > bottom)
@@ -115,6 +125,10 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   }
 
   if (keyCode === KEY_UP) {
+    if (preventDefaultEvents) {
+      e.preventDefault();
+    }
+
     const { left, top, right } = rect(selected);
     const sortedItems = arr(items)
       .filter(item => rect(item).bottom < top)
@@ -131,6 +145,10 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   }
 
   if (keyCode === KEY_RIGHT) {
+    if (preventDefaultEvents) {
+      e.preventDefault();
+    }
+
     const { right, top, bottom } = rect(selected);
     const sortedItems = arr(items)
       .filter(item => rect(item).left > right)
@@ -147,6 +165,10 @@ const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   }
 
   if (keyCode === KEY_LEFT) {
+    if (preventDefaultEvents) {
+      e.preventDefault();
+    }
+
     const { left, top, bottom } = rect(selected);
     const sortedItems = arr(items)
       .filter(item => rect(item).right < left)

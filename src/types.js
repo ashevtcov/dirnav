@@ -10,5 +10,6 @@ export type Bounds = {
 export type DirNavOptions = {
   focusableClass: ?string,
   selectedClass: ?string,
-  defaultSelectionClass: ?string
+  defaultSelectionClass: ?string,
+  preventDefaultEvents: ?boolean
 };
