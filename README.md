@@ -25,7 +25,7 @@ initDirNav({
 
 > All options are optional as well as the argument
 
-Then, you can mark elements, that are supposed to receive focus with `focusable` class, the `selected` class will be used to indicate current selection (do not set it in your DOM). If `preventDefaultEvents`, `e.preventDefault()` will be called on navigation events (for example, if LEFT ARROW or ENTER buttons are pressed).
+Then, you can mark elements, that are supposed to receive focus with `focusable` class, the `selected` class will be used to indicate current selection (do not set it in your DOM). If `preventDefaultEvents` is set to `true`, `e.preventDefault()` will be called on navigation events (for example, if LEFT ARROW or ENTER buttons is pressed).
 
 ```html
 <div>
