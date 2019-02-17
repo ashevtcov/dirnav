@@ -78,7 +78,6 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
         e.preventDefault();
       }
 
-      selected.classList.add('clicked');
       selected.click();
     }
   } else {
