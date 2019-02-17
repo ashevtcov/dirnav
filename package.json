@@ -6,6 +6,7 @@
   "scripts": {
     "build": "babel src --out-dir lib",
     "test": "mocha --require @babel/register tests/*.js",
+    "coverage": "nyc --reporter=html npm test",
     "flow": "flow",
     "lint": "eslint ./"
   },
@@ -24,6 +25,13 @@
   "bugs": {
     "url": "https://github.com/ashevtcov/dirnav/issues"
   },
+  "nyc": {
+    "exclude": [
+      "coverage/**",
+      "tests/**",
+      "build"
+    ]
+  },
   "homepage": "https://github.com/ashevtcov/dirnav#readme",
   "devDependencies": {
     "@babel/cli": "^7.2.3",
@@ -40,6 +48,7 @@
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
     "flow-bin": "^0.93.0",
-    "mocha": "^5.2.0"
+    "mocha": "^5.2.0",
+    "nyc": "^13.3.0"
   }
 }
