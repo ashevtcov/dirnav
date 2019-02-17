@@ -16,8 +16,8 @@ import {
 import {
   arr,
   rect,
-  selectElement,
-  deSelectElement,
+  addClass,
+  removeClass,
   getFirstInBounds,
   sortByTopAcs,
   sortByBottomDesc,
@@ -43,7 +43,7 @@ export const selectDefaultItem = (options: ?DirNavOptions) => {
     firstItem = selected[0];
 
     for (let i = 0; i < selected.length; i++) {
-      selected[i].classList.remove(selectedClass);
+      removeClass(selected[i], selectedClass);
     }
   }
 
@@ -51,12 +51,12 @@ export const selectDefaultItem = (options: ?DirNavOptions) => {
   const explicitFirstItem = domQueryOneByClass(defaultSelectionClass);
 
   if (explicitFirstItem) {
-    selectElement(explicitFirstItem);
+    addClass(explicitFirstItem, selectedClass);
     return;
   }
 
   if (firstItem) {
-    selectElement(firstItem);
+    addClass(firstItem, selectedClass);
   }
 };
 
@@ -66,7 +66,9 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   // Flow cannot parse them, so here's some shit code
   let focusableClass = (options && options.focusableClass) || DEFAULT_FOCUSABLE_CLASS;
   let selectedClass = (options && options.selectedClass) || DEFAULT_SELECTED_CLASS;
-  let preventDefaultEvents = (options && options.preventDefaultEvents) || DEFAULT_PREVENT_DEFAULT_EVENTS;
+  let preventDefaultEvents = (options && options.preventDefaultEvents !== undefined)
+    ? options.preventDefaultEvents
+    : DEFAULT_PREVENT_DEFAULT_EVENTS;
   // End of shit code
   const selected = domQueryOneByClass(selectedClass);
   const items = domQueryAllByClass(focusableClass);
@@ -82,7 +84,7 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
     }
   } else {
     if (items && items.length) {
-      items[0].classList.add(selectedClass);
+      addClass(items[0], selectedClass);
     }
 
     return;
@@ -173,8 +175,8 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   }
 
   if (newSelection) {
-    selectElement(newSelection);
-    deSelectElement(selected);
+    addClass(newSelection, selectedClass);
+    removeClass(selected, selectedClass);
   }
 };
 

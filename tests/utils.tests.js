@@ -4,10 +4,55 @@ import {
   sortByRightDesc,
   sortByLeftAsc,
   sortByBottomDesc,
-  sortByTopAcs
+  sortByTopAcs,
+  addClass,
+  removeClass
 } from '../src/utils';
+import { makeClassList } from './mocks/dom-mocks';
 
 describe('utils', () => {
+  describe('classList utils', () => {
+    const makeElement = (...defaultClasses) => ({
+      classList: makeClassList(...defaultClasses)
+    });
+
+    it('makeElement util', () => {
+      // A test for test - how funny is that!
+      const element1 = makeElement('default');
+
+      expect(element1.classList.dictionary['default']).to.exist;
+      expect(element1.classList.contains('default')).to.be.true;
+
+      const element2 = makeElement();
+
+      expect(Object.keys(element2.classList.dictionary)).to.have.lengthOf(0);
+
+      const element3 = makeElement('1', 'b', '!');
+
+      expect(Object.keys(element3.classList.dictionary)).to.have.lengthOf(3);
+      expect(element3.classList.dictionary['1']).to.exist;
+      expect(element3.classList.contains('1')).to.be.true;
+      expect(element3.classList.dictionary['b']).to.exist;
+      expect(element3.classList.contains('b')).to.be.true;
+      expect(element3.classList.dictionary['!']).to.exist;
+      expect(element3.classList.contains('!')).to.be.true;
+    });
+
+    it('addClass', () => {
+      const element = makeElement('default');
+      addClass(element, 'test-class-1');
+
+      expect(element.classList.dictionary['test-class-1']).to.exist;
+    });
+
+    it('removeClass', () => {
+      const element = makeElement('default');
+      removeClass(element, 'default');
+
+      expect(element.classList.dictionary['test-class-1']).to.not.exist;
+    });
+  });
+
   describe('sorters', () => {
     it('sortByRightDesc', () => {
       const list = [{
