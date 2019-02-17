@@ -49,6 +49,8 @@
     "eslint-plugin-react": "^7.12.4",
     "flow-bin": "^0.93.0",
     "mocha": "^5.2.0",
-    "nyc": "^13.3.0"
+    "nyc": "^13.3.0",
+    "proxyquire": "^2.1.0",
+    "sinon": "^7.2.3"
   }
 }
