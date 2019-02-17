@@ -1,6 +1,9 @@
 # Overview
 Directional navigation library for JavaScript applications to support 10 foot (TV) experience
 
+# Disclaimer
+This is a work in progress and there is no guarantee the library will work in your case. Please post your requests and bugs in the [Issues](https://github.com/ashevtcov/dirnav/issues) section of the GitHub repository.
+
 # Installation
 To install run `npm i dirnav`
 
@@ -47,3 +50,9 @@ selectDefaultItem({
   defaultSelectionClass: 'default-selection'
 });
 ```
+
+# Next steps
+1. Unit tests
+2. UI Tests (Cypress)
+3. Progressive navigation
+4. Navigation areas
