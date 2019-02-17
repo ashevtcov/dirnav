@@ -51,6 +51,7 @@ After all DOM elements are created, call the following method to execute pre-sel
 import { selectDefaultItem } from 'dirnav';
 
 selectDefaultItem({
+  selectedClass: 'selected',
   defaultSelectionClass: 'default-selection'
 });
 ```
