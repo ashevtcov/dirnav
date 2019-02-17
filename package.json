@@ -4,8 +4,8 @@
   "description": "Directional navigation library for JavaScript applications to support 10 foot (TV) experience",
   "main": "index.js",
   "scripts": {
-    "build": "babel dirnav.js -o index.js",
-    "test": "test",
+    "build": "babel src --out-dir lib",
+    "test": "mocha --require @babel/register tests/*.js",
     "flow": "flow",
     "lint": "eslint ./"
   },
@@ -30,12 +30,16 @@
     "@babel/core": "^7.3.3",
     "@babel/preset-env": "^7.3.1",
     "@babel/preset-flow": "^7.0.0",
+    "@babel/register": "^7.0.0",
     "babel-eslint": "^10.0.1",
+    "chai": "^4.2.0",
     "eslint": "^5.14.0",
     "eslint-config-airbnb": "^17.1.0",
     "eslint-plugin-import": "^2.16.0",
+    "eslint-plugin-jasmine": "^2.10.1",
     "eslint-plugin-jsx-a11y": "^6.2.1",
     "eslint-plugin-react": "^7.12.4",
-    "flow-bin": "^0.93.0"
+    "flow-bin": "^0.93.0",
+    "mocha": "^5.2.0"
   }
 }

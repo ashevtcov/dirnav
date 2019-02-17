@@ -1,57 +1,30 @@
 // @flow
 
-export type Bounds = {
-  top: number,
-  bottom: number,
-  left: number,
-  right: number
-};
+import type { Bounds, DirNavOptions } from './types';
 
-export type DirNavOptions = {
-  focusableClass: ?string,
-  selectedClass: ?string,
-  defaultSelectionClass: ?string
-};
-
-export const DEFAULT_FOCUSABLE_CLASS = 'focusable';
-export const DEFAULT_SELECTED_CLASS = 'selected';
-export const DEFAULT_DEFAULT_SELECTION_CLASS = 'default-selection';
-
-const KEY_UP = 38;
-const KEY_DOWN = 40;
-const KEY_LEFT = 37;
-const KEY_RIGHT = 39;
-const KEY_ENTER = 13;
-
-const getPageHeight = (): number =>
-  Math.max(
-    (document.body || {}).scrollHeight || 0,
-    (document.body || {}).offsetHeight || 0,
-    (document.documentElement || {}).clientHeight || 0,
-    (document.documentElement || {}).scrollHeight || 0,
-    (document.documentElement || {}).offsetHeight || 0
-  );
-const getPageWidth = (): number =>
-  Math.max(
-    (document.body || {}).scrollWidth || 0,
-    (document.body || {}).offsetWidth || 0,
-    (document.documentElement || {}).clientWidth || 0,
-    (document.documentElement || {}).scrollWidth || 0,
-    (document.documentElement || {}).offsetWidth || 0
-  );
-const selectElement = (element: HTMLElement) => element.classList.add(DEFAULT_SELECTED_CLASS);
-const deSelectElement = (element: HTMLElement) => element.classList.remove(DEFAULT_SELECTED_CLASS);
-const rect = (item: HTMLElement): Bounds => item.getBoundingClientRect();
-const arr = (collection) => [].slice.call(collection);
-const sortByTopAcs = (a: HTMLElement, b: HTMLElement) => rect(a).top - rect(b).top;
-const sortByBottomDesc = (a: HTMLElement, b: HTMLElement) => rect(b).bottom - rect(a).bottom;
-const sortByLeftAsc = (a: HTMLElement, b: HTMLElement) => rect(a).left - rect(b).left;
-const sortByRightDesc = (a: HTMLElement, b: HTMLElement) => rect(b).right - rect(a).right;
-const areBoundsIntersecting = (a: Bounds, b: Bounds): boolean =>
-  a.left <= b.right &&
-  b.left <= a.right &&
-  a.top <= b.bottom &&
-  b.top <= a.bottom;
+import {
+  DEFAULT_SELECTED_CLASS,
+  DEFAULT_FOCUSABLE_CLASS,
+  DEFAULT_DEFAULT_SELECTION_CLASS,
+  KEY_ENTER,
+  KEY_DOWN,
+  KEY_UP,
+  KEY_RIGHT,
+  KEY_LEFT
+} from './constants';
+import {
+  arr,
+  rect,
+  selectElement,
+  deSelectElement,
+  areBoundsIntersecting,
+  getPageWidth,
+  getPageHeight,
+  sortByTopAcs,
+  sortByBottomDesc,
+  sortByLeftAsc,
+  sortByRightDesc
+} from './utils';
 
 export const selectDefaultItem = (options: ?DirNavOptions) => {
   const selectedClass = (options && options.selectedClass) || DEFAULT_SELECTED_CLASS;
