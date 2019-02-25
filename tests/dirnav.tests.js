@@ -144,9 +144,12 @@ describe('dirnav', () => {
       });
     });
 
-    describe.only('KEY_UP', () => {
+    describe('KEY_UP', () => {
       it('selects next focusable above within vertical search area above of the same width', () => {
-        const selectedRect = { bottom: 49, top: 40, left: 40, right: 50 };
+        const selectedRect = {
+          bottom: 49, top: 40,
+          left: 40, right: 50
+        };
         const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
         selected.getBoundingClientRect.returns(selectedRect);
 
@@ -156,10 +159,12 @@ describe('dirnav', () => {
           makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
         ];
         items[1].getBoundingClientRect.returns({
-          bottom: 39, top: 30, left: 40, right: 50
+          bottom: 39, top: 30,
+          left: 40, right: 50
         });
         items[2].getBoundingClientRect.returns({
-          bottom: 29, top: 20, left: 40, right: 50
+          bottom: 29, top: 20,
+          left: 40, right: 50
         });
 
         domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
@@ -173,7 +178,10 @@ describe('dirnav', () => {
       });
 
       it('selects next focusable overlapping vertical search area above', () => {
-        const selectedRect = { bottom: 49, top: 40, left: 40, right: 50 };
+        const selectedRect = {
+          bottom: 49, top: 40,
+          left: 40, right: 50
+        };
         const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
         selected.getBoundingClientRect.returns(selectedRect);
 
@@ -183,10 +191,12 @@ describe('dirnav', () => {
           makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
         ];
         items[1].getBoundingClientRect.returns({
-          bottom: 39, top: 30, left: 35, right: 45
+          bottom: 39, top: 30,
+          left: 35, right: 45
         });
         items[2].getBoundingClientRect.returns({
-          bottom: 29, top: 20, left: 40, right: 50
+          bottom: 29, top: 20,
+          left: 40, right: 50
         });
 
         domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
@@ -200,7 +210,10 @@ describe('dirnav', () => {
       });
 
       it('does not change selection if no items overlap vertical search area above', () => {
-        const selectedRect = { bottom: 19, top: 10, left: 40, right: 50 };
+        const selectedRect = {
+          bottom: 19, top: 10,
+          left: 40, right: 50
+        };
         const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
         selected.getBoundingClientRect.returns(selectedRect);
 
@@ -211,19 +224,127 @@ describe('dirnav', () => {
           makeElement(DEFAULT_FOCUSABLE_CLASS, 'four')
         ];
         items[1].getBoundingClientRect.returns({
-          bottom: 39, top: 30, left: 40, right: 50
+          bottom: 39, top: 30,
+          left: 40, right: 50
         });
         items[2].getBoundingClientRect.returns({
-          bottom: 19, top: 10, left: 10, right: 20
+          bottom: 19, top: 10,
+          left: 10, right: 20
         });
         items[3].getBoundingClientRect.returns({
-          bottom: 9, top: 0, left: 5, right: 15
+          bottom: 9, top: 0,
+          left: 5, right: 15
         });
 
         domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
         domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
 
         onKeyPress(makeEvent(KEY_UP));
+
+        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+      });
+
+    });
+
+    describe('KEY_DOWN', () => {
+      it('selects next focusable below within vertical search area above of the same width', () => {
+        const selectedRect = {
+          bottom: 19, top: 10,
+          left: 40, right: 50
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 29, top: 20,
+          left: 40, right: 50
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 39, top: 30,
+          left: 40, right: 50
+        });
+
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_DOWN));
+
+        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+      });
+
+      it('selects next focusable overlapping vertical search area below', () => {
+        const selectedRect = {
+          bottom: 19, top: 10,
+          left: 40, right: 50
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 29, top: 20,
+          left: 35, right: 45
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 39, top: 30,
+          left: 40, right: 50
+        });
+
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_DOWN));
+
+        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+      });
+
+      it('does not change selection if no items overlap vertical search area below', () => {
+        const selectedRect = {
+          bottom: 39, top: 30,
+          left: 40, right: 50
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'four')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 29, top: 20,
+          left: 40, right: 50
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 19, top: 10,
+          left: 10, right: 20
+        });
+        items[3].getBoundingClientRect.returns({
+          bottom: 49, top: 40,
+          left: 5, right: 15
+        });
+
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_DOWN));
 
         expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
         expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
