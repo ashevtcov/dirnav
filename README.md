@@ -1,6 +1,8 @@
 # Overview
 Directional navigation library for JavaScript applications to support 10 foot (TV) experience
 
+![](dirnav.gif)
+
 # Disclaimer
 This is a work in progress and there is no guarantee the library will work in your case. Please post your requests and bugs in the [Issues](https://github.com/ashevtcov/dirnav/issues) section of the GitHub repository.
 

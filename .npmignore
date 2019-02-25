@@ -3,3 +3,5 @@
 /tests
 .nyc_output/*
 .vscode/*
+dirnav.gif
+.mocha.init.js
