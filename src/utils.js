@@ -5,7 +5,7 @@ import type { Bounds } from './types';
 export const addClass = (element: HTMLElement, selectedClass: string) => element.classList.add(selectedClass);
 export const removeClass = (element: HTMLElement, selectedClass: string) => element.classList.remove(selectedClass);
 export const rect = (item: HTMLElement): Bounds => item.getBoundingClientRect();
-export const arr = (collection: any) => [].slice.call(collection);
+export const arr = (collection: any) => Array.isArray(collection) ? collection : [].slice.call(collection);
 export const sortByTopAcs = (a: HTMLElement, b: HTMLElement) => rect(a).top - rect(b).top;
 export const sortByBottomDesc = (a: HTMLElement, b: HTMLElement) => rect(b).bottom - rect(a).bottom;
 export const sortByLeftAsc = (a: HTMLElement, b: HTMLElement) => rect(a).left - rect(b).left;
