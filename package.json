@@ -1,6 +1,6 @@
 {
   "name": "dirnav",
-  "version": "0.0.6",
+  "version": "0.0.7",
   "description": "Directional navigation library for JavaScript applications to support 10 foot (TV) experience",
   "main": "index.js",
   "scripts": {
