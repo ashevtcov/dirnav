@@ -25,6 +25,8 @@ initDirNav({
 
 > All options are optional as well as the argument
 
+> The examples are written in React, therefore `className` attribute is used instead of `class`
+
 Then, you can mark elements, that are supposed to receive focus with `focusable` class, the `selected` class will be used to indicate current selection (do not set it in your DOM). If `preventDefaultEvents` is set to `true`, `e.preventDefault()` will be called on navigation events (for example, if LEFT ARROW or ENTER buttons is pressed).
 
 ```html
@@ -57,7 +59,8 @@ selectDefaultItem({
 ```
 
 # Next steps
-1. Unit tests
-2. UI Tests (Cypress)
-3. Progressive navigation
-4. Navigation areas
+1. More unit tests
+2. Hardcoded navigation (selection of certain element is bound to specific direction)
+3. Progressive navigation (wider area of search)
+4. Navigation areas (groupping)
+5. UI Tests via Cypress

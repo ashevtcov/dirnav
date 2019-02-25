@@ -246,7 +246,6 @@ describe('dirnav', () => {
         expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
         expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
       });
-
     });
 
     describe('KEY_DOWN', () => {
@@ -351,7 +350,6 @@ describe('dirnav', () => {
         expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
         expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
       });
-
     });
   });
 });
