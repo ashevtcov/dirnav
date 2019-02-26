@@ -14,9 +14,8 @@ import {
 import { makeClassList } from './mocks/dom-mocks';
 
 describe('dirnav', () => {
-  let preventDefault, selectDefaultItem, onKeyPress, click;
-  let domQueryOneByClass, domQueryAllByClass, domAddEvent,
-    getPageWidth, getPageHeight;
+  let preventDefault, selectDefaultItem, onKeyPress, initDirNav, click;
+  let domQueryOneByClass, domQueryAllByClass, domAddEvent, getPageWidth, getPageHeight;
 
   const makeEvent = (keyCode) => ({ keyCode, preventDefault });
   const makeElement = (...defaultClasses) => ({
@@ -34,7 +33,7 @@ describe('dirnav', () => {
     getPageWidth = stub().returns(1024);
     getPageHeight = stub().returns(768);
 
-    ({ selectDefaultItem, onKeyPress } = proxyquire('../src/dirnav', {
+    ({ selectDefaultItem, onKeyPress, initDirNav } = proxyquire('../src/dirnav', {
       './dom': {
         domQueryOneByClass,
         domQueryAllByClass,
@@ -48,6 +47,15 @@ describe('dirnav', () => {
     // Well, this test definitely has a flavor of an integration one, because
     // if I mock/stub/proxyquire all my utils, it will be a... mockery, whereas
     // I actually want to test the algorithm, with specified input and expected output
+  });
+
+  describe('initDirNav', () => {
+    it('adds keydown dom event', () => {
+      // TBD: Improve this test
+      initDirNav();
+
+      expect(domAddEvent).to.have.been.calledWith('keydown');
+    });
   });
 
   describe('options', () => {
@@ -116,6 +124,34 @@ describe('dirnav', () => {
         expect(domQueryOneByClass).to.have.been.calledWith('test2');
         expect(domQueryOneByClass).to.have.not.been.calledWith(DEFAULT_DEFAULT_SELECTION_CLASS);
       });
+    });
+  });
+
+  describe('selectDefaultItem', () => {
+    it('select explicitly set default element', () => {
+      const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS);
+      const defaultSelected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_DEFAULT_SELECTION_CLASS);
+
+      domQueryAllByClass.withArgs(DEFAULT_SELECTED_CLASS).returns([selected]);
+      domQueryOneByClass.withArgs(DEFAULT_DEFAULT_SELECTION_CLASS).returns(defaultSelected);
+
+      selectDefaultItem();
+
+      expect(selected.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+      expect(defaultSelected.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+    });
+
+    it('select first focusable as a default element', () => {
+      const first = makeElement(DEFAULT_FOCUSABLE_CLASS);
+      const second = makeElement(DEFAULT_FOCUSABLE_CLASS);
+
+      domQueryAllByClass.withArgs(DEFAULT_SELECTED_CLASS).returns([first, second]);
+      domQueryOneByClass.withArgs(DEFAULT_DEFAULT_SELECTION_CLASS).returns(null);
+
+      selectDefaultItem();
+
+      expect(first.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+      expect(second.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
     });
   });
 
