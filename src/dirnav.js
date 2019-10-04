@@ -60,6 +60,145 @@ export const selectDefaultItem = (options: ?DirNavOptions) => {
   }
 };
 
+const handleLeft = ({
+  selected,
+  items
+}) => {
+  const { left, top, bottom } = rect(selected);
+  const sortedItems = arr(items)
+    .filter(item => rect(item).right < left)
+    .sort(sortByRightDesc);
+
+  const searchBounds = {
+    top,
+    bottom,
+    left: 0,
+    right: left,
+  };
+
+  const newSelection = getFirstInBounds(sortedItems, searchBounds);
+
+  return {
+    newSelection
+  };
+};
+
+const handleRight = ({
+  selected,
+  items,
+  pageWidth
+}) => {
+  const { right, top, bottom } = rect(selected);
+  const sortedItems = arr(items)
+    .filter(item => rect(item).left > right)
+    .sort(sortByLeftAsc);
+
+  const searchBounds = {
+    top,
+    bottom,
+    left: right,
+    right: pageWidth,
+  };
+
+  const newSelection = getFirstInBounds(sortedItems, searchBounds);
+
+  return {
+    newSelection
+  };
+};
+
+const handleDown = ({
+  selected,
+  items,
+  pageHeight
+}) => {
+  const { left, right, bottom } = rect(selected);
+  const sortedItems = arr(items)
+    .filter(item => rect(item).top > bottom)
+    .sort(sortByTopAcs);
+
+  const searchBounds = {
+    top: bottom,
+    bottom: pageHeight,
+    left,
+    right,
+  };
+
+  const newSelection = getFirstInBounds(sortedItems, searchBounds);
+
+  return {
+    newSelection
+  };
+};
+
+const handleUp = ({
+  selected,
+  items
+}) => {
+  const { left, top, right } = rect(selected);
+  const sortedItems = arr(items)
+    .filter(item => rect(item).bottom < top)
+    .sort(sortByBottomDesc);
+
+  const searchBounds = {
+    top: 0,
+    bottom: top,
+    left,
+    right,
+  };
+
+  const newSelection = getFirstInBounds(sortedItems, searchBounds);
+
+  return {
+    newSelection
+  };
+};
+
+type DirectionResult = {
+  newSelection: any
+};
+
+const isDirectionalKeyCode = (keyCode) => (
+  keyCode === KEY_LEFT ||
+  keyCode === KEY_RIGHT ||
+  keyCode === KEY_DOWN ||
+  keyCode === KEY_UP
+);
+
+const handleDirection = ({
+  preventDefaultEvents,
+  keyCode,
+  preventDefault,
+  pageWidth,
+  pageHeight,
+  selected,
+  items
+}): DirectionResult => {
+  if (isDirectionalKeyCode(keyCode) && preventDefaultEvents) {
+    preventDefault();
+  }
+
+  if (keyCode === KEY_LEFT) {
+    return handleLeft({ selected, items });
+  }
+
+  if (keyCode === KEY_RIGHT) {
+    return handleRight({ selected, items, pageWidth });
+  }
+
+  if (keyCode === KEY_DOWN) {
+    return handleDown({ selected, items, pageHeight });
+  }
+
+  if (keyCode === KEY_UP) {
+    return handleUp({ selected, items });
+  }
+
+  return {
+    newSelection: null
+  };
+};
+
 export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   // Temporary solution until https://github.com/facebook/flow/issues/183 is fixed
   // I wanted to use beautiful destructuring with defaulting, but
@@ -72,12 +211,12 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
   // End of shit code
   const selected = domQueryOneByClass(selectedClass);
   const items = domQueryAllByClass(focusableClass);
-  const { keyCode } = e;
+  const { keyCode, preventDefault } = e;
 
   if (selected) {
     if (keyCode === KEY_ENTER) {
       if (preventDefaultEvents) {
-        e.preventDefault();
+        preventDefault();
       }
 
       selected.click();
@@ -90,89 +229,17 @@ export const onKeyPress = (e: KeyboardEvent, options: ?DirNavOptions) => {
     return;
   }
 
-  let newSelection = null;
   const pageWidth = getPageWidth();
   const pageHeight = getPageHeight();
-
-  if (keyCode === KEY_DOWN) {
-    if (preventDefaultEvents) {
-      e.preventDefault();
-    }
-
-    const { left, right, bottom } = rect(selected);
-    const sortedItems = arr(items)
-      .filter(item => rect(item).top > bottom)
-      .sort(sortByTopAcs);
-
-    const searchBounds = {
-      top: bottom,
-      bottom: pageHeight,
-      left,
-      right,
-    };
-
-    newSelection = getFirstInBounds(sortedItems, searchBounds);
-  }
-
-  if (keyCode === KEY_UP) {
-    if (preventDefaultEvents) {
-      e.preventDefault();
-    }
-
-    const { left, top, right } = rect(selected);
-    const sortedItems = arr(items)
-      .filter(item => rect(item).bottom < top)
-      .sort(sortByBottomDesc);
-
-    const searchBounds = {
-      top: 0,
-      bottom: top,
-      left,
-      right,
-    };
-
-    newSelection = getFirstInBounds(sortedItems, searchBounds);
-  }
-
-  if (keyCode === KEY_RIGHT) {
-    if (preventDefaultEvents) {
-      e.preventDefault();
-    }
-
-    const { right, top, bottom } = rect(selected);
-    const sortedItems = arr(items)
-      .filter(item => rect(item).left > right)
-      .sort(sortByLeftAsc);
-
-    const searchBounds = {
-      top,
-      bottom,
-      left: right,
-      right: pageWidth,
-    };
-
-    newSelection = getFirstInBounds(sortedItems, searchBounds);
-  }
-
-  if (keyCode === KEY_LEFT) {
-    if (preventDefaultEvents) {
-      e.preventDefault();
-    }
-
-    const { left, top, bottom } = rect(selected);
-    const sortedItems = arr(items)
-      .filter(item => rect(item).right < left)
-      .sort(sortByRightDesc);
-
-    const searchBounds = {
-      top,
-      bottom,
-      left: 0,
-      right: left,
-    };
-
-    newSelection = getFirstInBounds(sortedItems, searchBounds);
-  }
+  const { newSelection } = handleDirection({
+    preventDefaultEvents,
+    keyCode,
+    preventDefault,
+    pageWidth,
+    pageHeight,
+    selected,
+    items
+  });
 
   if (newSelection) {
     addClass(newSelection, selectedClass);
