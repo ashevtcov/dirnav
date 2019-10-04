@@ -13,6 +13,9 @@ npm i dirnav
 ```
 
 # Usage Example
+
+## Initialization
+
 Initialize navigation on application load using code below.
 
 ```javascript
@@ -29,7 +32,9 @@ initDirNav({
 
 > The examples are written in React, therefore `className` attribute is used instead of `class`
 
-Then, you can mark elements, that are supposed to receive focus with `focusable` class, the `selected` class will be used to indicate current selection (do not set it in your DOM). If `preventDefaultEvents` is set to `true`, `e.preventDefault()` will be called on navigation events (for example, if LEFT ARROW or ENTER buttons is pressed).
+## Focusable Elements
+
+You can mark elements, that are supposed to receive focus, with `focusable` class. The `selected` class will be used to indicate current selection (do not set it in your DOM). If `preventDefaultEvents` is set to `true`, `e.preventDefault()` will be called on navigation events (for example, if LEFT ARROW or ENTER buttons is pressed).
 
 ```html
 <div>
@@ -38,6 +43,8 @@ Then, you can mark elements, that are supposed to receive focus with `focusable`
   <div className='focusable'>Three</div>
 </div>
 ```
+
+## Default Selection
 
 Mark any `focusable` element with `default-selection` class so the library can pre-select it.
 
@@ -60,9 +67,25 @@ selectDefaultItem({
 });
 ```
 
+## Hardcoded Navigation
+
+To specify next navigation element for any direction, refer to the example below:
+
+```html
+<div>
+  <div className='focusable default-selection' next-down='.three'>One</div>
+  <div className='focusable'>Two</div>
+  <div className='focusable three'>Three</div>
+</div>
+```
+
+In this case, if user presses `DOWN` on the when first element is selected, the system
+will automatically select element with class `three`, as specified in the _query_ of
+the `next-down` attribute (`document.querySelector` function is used to select an element,
+hardcoded this way).
+
 # Next steps
-1. More unit tests
-2. Hardcoded navigation (selection of certain element is bound to specific direction)
-3. Progressive navigation (wider area of search)
-4. Navigation areas (groupping)
-5. UI Tests via Cypress
+1. Auto-scrolling
+2. Progressive navigation (wider area of search)
+3. Navigation areas (groupping)
+4. UI Tests via Cypress
