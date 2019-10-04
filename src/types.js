@@ -13,3 +13,7 @@ export type DirNavOptions = {
   defaultSelectionClass: ?string,
   preventDefaultEvents: ?boolean
 };
+
+export type DirectionResult = {
+  newSelection: ?HTMLElement
+};

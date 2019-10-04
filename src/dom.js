@@ -2,12 +2,14 @@
 
 export const domAddEvent = (eventName: string, callback: any) =>
   document.addEventListener(eventName, callback);
-export const domQuery = (selector: string): ?HTMLElement =>
+export const domQueryOne = (selector: string): ?HTMLElement =>
   document.querySelector(selector);
 export const domQueryOneByClass = (className: string): ?HTMLElement =>
-  domQuery(`.${className}`);
+  domQueryOne(`.${className}`);
 export const domQueryAllByClass = (className: string): ?HTMLCollection<HTMLElement> =>
   document.getElementsByClassName(className);
+export const domGetAttrValue = (element: HTMLElement, attrName: string): ?string =>
+  element.getAttribute(attrName);
 
 export const getPageHeight = (): number =>
   Math.max(

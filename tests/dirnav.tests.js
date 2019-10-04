@@ -9,24 +9,31 @@ import {
   KEY_ENTER,
   DEFAULT_FOCUSABLE_CLASS,
   DEFAULT_SELECTED_CLASS,
-  DEFAULT_DEFAULT_SELECTION_CLASS
+  DEFAULT_DEFAULT_SELECTION_CLASS,
+  NEXT_UP_CLASS,
+  NEXT_DOWN_CLASS,
+  NEXT_LEFT_CLASS,
+  NEXT_RIGHT_CLASS
 } from '../src/constants';
 import { makeClassList } from './mocks/dom-mocks';
 
 describe('dirnav', () => {
   let preventDefault, selectDefaultItem, onKeyPress, initDirNav, click;
-  let domQueryOneByClass, domQueryAllByClass, domAddEvent, getPageWidth, getPageHeight;
+  let domQueryOne, domQueryOneByClass, domQueryAllByClass, domAddEvent, getPageWidth, getPageHeight;
 
   const makeEvent = (keyCode) => ({ keyCode, preventDefault });
   const makeElement = (...defaultClasses) => ({
     classList: makeClassList(...defaultClasses),
     getBoundingClientRect: stub(),
-    click
+    click,
+    getAttribute: stub()
   });
+  const isSelected = ({ classList }) => classList.contains(DEFAULT_SELECTED_CLASS);
 
   beforeEach(() => {
     preventDefault = stub();
     click = stub();
+    domQueryOne = stub();
     domQueryOneByClass = stub();
     domQueryAllByClass = stub().returns([]);
     domAddEvent = stub();
@@ -39,7 +46,8 @@ describe('dirnav', () => {
         domQueryAllByClass,
         domAddEvent,
         getPageWidth,
-        getPageHeight
+        getPageHeight,
+        domQueryOne
       }
     }));
 
@@ -137,8 +145,8 @@ describe('dirnav', () => {
 
       selectDefaultItem();
 
-      expect(selected.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-      expect(defaultSelected.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
+      expect(isSelected(selected)).to.be.false;
+      expect(isSelected(defaultSelected)).to.be.true;
     });
 
     it('select first focusable as a default element', () => {
@@ -150,8 +158,8 @@ describe('dirnav', () => {
 
       selectDefaultItem();
 
-      expect(first.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-      expect(second.classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+      expect(isSelected(first)).to.be.true;
+      expect(isSelected(second)).to.be.false;
     });
   });
 
@@ -208,9 +216,43 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_UP));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
+      });
+
+      it('selects a hardcoded element above', () => {
+        const selectedRect = {
+          bottom: 49, top: 40,
+          left: 40, right: 50
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+        selected.getAttribute.withArgs(NEXT_UP_CLASS).returns('.three');
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 39, top: 30,
+          left: 40, right: 50
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 29, top: 20,
+          left: 40, right: 50
+        });
+
+        domQueryOne.withArgs('.three').returns(items[2]);
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_UP));
+
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.true;
       });
 
       it('selects next focusable element, overlapping vertical search area above', () => {
@@ -240,9 +282,9 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_UP));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
       });
 
       it('does not change selection if no items overlap vertical search area above', () => {
@@ -277,10 +319,10 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_UP));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.true;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.false;
+        expect(isSelected(items[3])).to.be.false;
       });
     });
 
@@ -312,9 +354,43 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_DOWN));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
+      });
+
+      it('selects a hardcoded element below', () => {
+        const selectedRect = {
+          bottom: 19, top: 10,
+          left: 40, right: 50
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+        selected.getAttribute.withArgs(NEXT_DOWN_CLASS).returns('.three');
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 29, top: 20,
+          left: 40, right: 50
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 39, top: 30,
+          left: 40, right: 50
+        });
+
+        domQueryOne.withArgs('.three').returns(items[2]);
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_DOWN));
+
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.true;
       });
 
       it('selects next focusable element, overlapping vertical search area below', () => {
@@ -344,9 +420,9 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_DOWN));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
       });
 
       it('does not change selection if no items overlap vertical search area below', () => {
@@ -381,10 +457,10 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_DOWN));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.true;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.false;
+        expect(isSelected(items[3])).to.be.false;
       });
     });
 
@@ -416,9 +492,43 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_LEFT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
+      });
+
+      it('selects a hardcoded element on the left', () => {
+        const selectedRect = {
+          bottom: 50, top: 40,
+          left: 40, right: 49
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+        selected.getAttribute.withArgs(NEXT_LEFT_CLASS).returns('.three');
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 50, top: 40,
+          left: 30, right: 39
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 50, top: 40,
+          left: 20, right: 29
+        });
+
+        domQueryOne.withArgs('.three').returns(items[2]);
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_LEFT));
+
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.true;
       });
 
       it('selects next focusable element, overlapping vertical search area on the left', () => {
@@ -448,9 +558,9 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_LEFT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
       });
 
       it('does not change selection if no items overlap horizontal search area on the left', () => {
@@ -485,10 +595,10 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_LEFT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.true;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.false;
+        expect(isSelected(items[3])).to.be.false;
       });
     });
 
@@ -520,9 +630,43 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_RIGHT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
+      });
+
+      it('selects a hardcoded element on the right', () => {
+        const selectedRect = {
+          bottom: 50, top: 40,
+          left: 20, right: 29
+        };
+        const selected = makeElement(DEFAULT_FOCUSABLE_CLASS, DEFAULT_SELECTED_CLASS, 'one');
+        selected.getBoundingClientRect.returns(selectedRect);
+        selected.getAttribute.withArgs(NEXT_RIGHT_CLASS).returns('.three');
+
+        const items = [
+          selected,
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'two'),
+          makeElement(DEFAULT_FOCUSABLE_CLASS, 'three')
+        ];
+        items[1].getBoundingClientRect.returns({
+          bottom: 50, top: 40,
+          left: 30, right: 39
+        });
+        items[2].getBoundingClientRect.returns({
+          bottom: 50, top: 40,
+          left: 40, right: 49
+        });
+
+        domQueryOne.withArgs('.three').returns(items[2]);
+        domQueryOneByClass.withArgs(DEFAULT_SELECTED_CLASS).returns(selected);
+        domQueryAllByClass.withArgs(DEFAULT_FOCUSABLE_CLASS).returns(items);
+
+        onKeyPress(makeEvent(KEY_RIGHT));
+
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.true;
       });
 
       it('selects next focusable element, overlapping vertical search area on the right', () => {
@@ -552,9 +696,9 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_RIGHT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.false;
+        expect(isSelected(items[1])).to.be.true;
+        expect(isSelected(items[2])).to.be.false;
       });
 
       it('does not change selection if no items overlap horizontal search area on the right', () => {
@@ -589,10 +733,10 @@ describe('dirnav', () => {
 
         onKeyPress(makeEvent(KEY_RIGHT));
 
-        expect(items[0].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.true;
-        expect(items[1].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[2].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
-        expect(items[3].classList.contains(DEFAULT_SELECTED_CLASS)).to.be.false;
+        expect(isSelected(items[0])).to.be.true;
+        expect(isSelected(items[1])).to.be.false;
+        expect(isSelected(items[2])).to.be.false;
+        expect(isSelected(items[3])).to.be.false;
       });
     });
   });

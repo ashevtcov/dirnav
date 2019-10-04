@@ -1,6 +1,6 @@
 // @flow
 
-import type { DirNavOptions } from './types';
+import type { DirNavOptions, DirectionResult } from './types';
 
 import {
   DEFAULT_SELECTED_CLASS,
@@ -11,7 +11,11 @@ import {
   KEY_DOWN,
   KEY_UP,
   KEY_RIGHT,
-  KEY_LEFT
+  KEY_LEFT,
+  NEXT_LEFT_CLASS,
+  NEXT_UP_CLASS,
+  NEXT_RIGHT_CLASS,
+  NEXT_DOWN_CLASS
 } from './constants';
 import {
   arr,
@@ -27,12 +31,14 @@ import {
 import {
   getPageWidth,
   getPageHeight,
+  domQueryOne,
   domQueryOneByClass,
   domQueryAllByClass,
-  domAddEvent
+  domAddEvent,
+  domGetAttrValue
 } from './dom';
 
-export const selectDefaultItem = (options: ?DirNavOptions) => {
+export const selectDefaultItem = (options: ?DirNavOptions): void => {
   const selectedClass = (options && options.selectedClass) || DEFAULT_SELECTED_CLASS;
   const defaultSelectionClass = (options && options.defaultSelectionClass) || DEFAULT_DEFAULT_SELECTION_CLASS;
   const selected = domQueryAllByClass(selectedClass);
@@ -63,7 +69,15 @@ export const selectDefaultItem = (options: ?DirNavOptions) => {
 const handleLeft = ({
   selected,
   items
-}) => {
+}): DirectionResult => {
+  const hardNext = domGetAttrValue(selected, NEXT_LEFT_CLASS);
+
+  if (hardNext) {
+    return {
+      newSelection: domQueryOne(hardNext)
+    };
+  }
+
   const { left, top, bottom } = rect(selected);
   const sortedItems = arr(items)
     .filter(item => rect(item).right < left)
@@ -87,7 +101,15 @@ const handleRight = ({
   selected,
   items,
   pageWidth
-}) => {
+}): DirectionResult => {
+  const hardNext = domGetAttrValue(selected, NEXT_RIGHT_CLASS);
+
+  if (hardNext) {
+    return {
+      newSelection: domQueryOne(hardNext)
+    };
+  }
+
   const { right, top, bottom } = rect(selected);
   const sortedItems = arr(items)
     .filter(item => rect(item).left > right)
@@ -111,7 +133,15 @@ const handleDown = ({
   selected,
   items,
   pageHeight
-}) => {
+}): DirectionResult => {
+  const hardNext = domGetAttrValue(selected, NEXT_DOWN_CLASS);
+
+  if (hardNext) {
+    return {
+      newSelection: domQueryOne(hardNext)
+    };
+  }
+
   const { left, right, bottom } = rect(selected);
   const sortedItems = arr(items)
     .filter(item => rect(item).top > bottom)
@@ -134,7 +164,15 @@ const handleDown = ({
 const handleUp = ({
   selected,
   items
-}) => {
+}): DirectionResult => {
+  const hardNext = domGetAttrValue(selected, NEXT_UP_CLASS);
+
+  if (hardNext) {
+    return {
+      newSelection: domQueryOne(hardNext)
+    };
+  }
+
   const { left, top, right } = rect(selected);
   const sortedItems = arr(items)
     .filter(item => rect(item).bottom < top)
@@ -154,11 +192,7 @@ const handleUp = ({
   };
 };
 
-type DirectionResult = {
-  newSelection: any
-};
-
-const isDirectionalKeyCode = (keyCode) => (
+const isDirectionalKeyCode = (keyCode: number): boolean => (
   keyCode === KEY_LEFT ||
   keyCode === KEY_RIGHT ||
   keyCode === KEY_DOWN ||
