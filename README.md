@@ -79,7 +79,7 @@ To specify next navigation element for any direction, refer to the example below
 </div>
 ```
 
-In this case, if user presses `DOWN` on the when first element is selected, the system
+In this case, if user presses `DOWN`, to navigate from the first element, the system
 will automatically select element with class `three`, as specified in the _query_ of
 the `next-down` attribute (`document.querySelector` function is used to select an element,
 hardcoded this way).
