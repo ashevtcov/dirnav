@@ -81,8 +81,11 @@ To specify next navigation element for any direction, refer to the example below
 
 In this case, if user presses `DOWN`, to navigate from the first element, the system
 will automatically select element with class `three`, as specified in the _query_ of
-the `next-down` attribute (`document.querySelector` function is used to select an element,
-hardcoded this way).
+the `next-down` attribute value. Hardcoded navigation is available for all directions
+using the according attribute names: `next-left`, `next-right`, `next-down` and `next-up`.
+
+> The `document.querySelector` function is used to select an element,
+hardcoded this way
 
 # Next steps
 1. Auto-scrolling
